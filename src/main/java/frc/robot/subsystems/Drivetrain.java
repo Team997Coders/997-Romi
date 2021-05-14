@@ -15,6 +15,9 @@ public class Drivetrain extends SubsystemBase {
   private static final double kCountsPerRevolution = 1440.0;
   private static final double kWheelDiameterInch = 2.75591; // 70 mm
 
+  private final double driveSpeedRampUp = 0.1;
+  private double lastXSpeed = 0.0;
+
   // The Romi has the left and right motors set to
   // PWM channels 0 and 1 respectively
   private final Spark m_leftMotor = new Spark(0);
@@ -43,6 +46,12 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
+    if (xaxisSpeed >= lastXSpeed + driveSpeedRampUp) {
+      xaxisSpeed = lastXSpeed + driveSpeedRampUp;
+    } else if (xaxisSpeed <= lastXSpeed - driveSpeedRampUp) {
+      xaxisSpeed = lastXSpeed - driveSpeedRampUp;
+    }
+    lastXSpeed = xaxisSpeed;
     m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate);
   }
 
